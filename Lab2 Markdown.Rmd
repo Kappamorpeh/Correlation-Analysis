@@ -1,0 +1,52 @@
+---
+title: "Lab2"
+author: "Denys Kushnirenko"
+date: "2023-10-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Plot a scatterplot matrix for several sets of quantitative data from the same dataset.
+
+```{r, echo=FALSE}
+happyscore_income <- read.csv(".\\happyscore_income.csv")
+library(car)
+library(corrplot)
+library(qgraph)
+```
+```{r}
+pairs(~ avg_satisfaction + avg_income + income_inequality + happyScore + GDP, data=happyscore_income, upper.panel=NULL)
+```
+
+## 2. Also, print the correlation matrix (correlation map) (with numbers and circles/squares) and the correlation graph for these sets.
+
+```{r}
+cor(happyscore_income[,c(3,5,7,9,10)])
+corrplot(cor(happyscore_income[,c(3,5,7,9,10)]),method = "square", type = "upper",addCoef.col = "black")
+qgraph(cor(happyscore_income[,c(3,5,7,9,10)]),shape='square')
+```
+
+## 3. For the most significant correlations, calculate the Pearson, Spearman, or Kendall correlation coefficients, and statistically test their significance.
+
+```{r}
+cor.test(happyscore_income[,"GDP"], happyscore_income[,"avg_income"])
+cor.test(happyscore_income[,"avg_satisfaction"], happyscore_income[,"happyScore"], method = "kendal")
+cor.test(happyscore_income[,"avg_income"], happyscore_income[,"happyScore"], method = "spearman")
+```
+
+## 4. Determine the value of the coefficient of determination for one dependent and several independent variables.
+
+```{r}
+model1 <- lm(happyScore ~ GDP+avg_income+income_inequality, data = happyscore_income)
+summary(model1)
+```
+## 5. Interpret the results obtained.
+
+Residual standard error (RSE) = 0.661 demonstrates the standard error of the difference between the modeled value of the dependent variable and the actual one. It is one of the indicators of how well the regression model fits the dataset. The smaller the value, the better for our model.
+R-squared = 0.6952 demonstrates the percentage of the variance of the dependent variable that can be explained by the independent variables. In other words, it is one of the indicators of how well our mathematical model matches the empirical values of the dataset. Adjusted R-squared = 0.6866 is an adjusted R-squared, as the value of R-squared directly depends on the number of independent variables. Both indicators are at a fairly high level (we have a match of almost 70%).Next is the F-statistic: 81.35 and p-value. A low p-value means that we reject the null hypothesis, which states that our regression model does not fit the dataset. Therefore, we have proven that the happiness index directly depends on the GDP of the country, the average income of citizens, and the level of income inequality.
+
+
+
